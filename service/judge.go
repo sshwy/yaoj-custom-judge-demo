@@ -14,17 +14,19 @@ type JudgeServiceRPC interface {
 
 // 评测服务 RPC
 type JudgeService struct {
-	fs *FileService
+	fs            *FileService
+	OutputMaxSize int // byte length
 }
 
 var _ JudgeServiceRPC = (*JudgeService)(nil)
 
 var Judge = JudgeService{
-	fs: &TempFile,
+	fs:            &TempFile,
+	OutputMaxSize: 1000,
 }
 
 const compile_templ = `#!/bin/bash
-gcc {{.Source}} -o {{.Dest}} -static -O2 -lm -DONLINE_JUDGE 2> {{.Ferr}} > /dev/null
+g++ {{.Source}} -o {{.Dest}} -static -O2 -lm -DONLINE_JUDGE 2> {{.Ferr}} > /dev/null
 `
 
 // 编译 C/C++ 源代码，返回可执行文件、编译输出信息
@@ -68,12 +70,16 @@ func (r *JudgeService) compileCsrc(fsrc string) (string, string, error) {
 		return "", "", err
 	}
 	berr, _ := r.fs.ReadFile(ferr)
+	if len(berr) > r.OutputMaxSize {
+		berr = append(berr[:r.OutputMaxSize], "......"...)
+	}
+	sberr := string(berr[:])
 
 	if res.Result != 0 {
-		return "", string(berr[:]), errors.New("compile execute failed: " + res.String())
+		return "", sberr, errors.New("compile execute failed: " + res.String())
 	}
 
-	return fexec, string(berr[:]), nil
+	return fexec, sberr, nil
 }
 
 // RPC 服务的参数和返回值
@@ -129,6 +135,13 @@ func (r *JudgeService) customTestC(fsrc string, fin string) (CustomTestRly, erro
 	berr, err := r.fs.ReadFile(ferr)
 	if err != nil {
 		return CustomTestRly{}, err
+	}
+
+	if len(bout) > r.OutputMaxSize {
+		bout = append(bout[:r.OutputMaxSize], "......"...)
+	}
+	if len(berr) > r.OutputMaxSize {
+		berr = append(berr[:r.OutputMaxSize], "......"...)
 	}
 
 	return CustomTestRly{
