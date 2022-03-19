@@ -5,15 +5,18 @@ import (
 	"log"
 	"os"
 	"path"
+	"time"
 )
 
 // 核心文件存储服务
 type FileService struct {
 	tempDir string
+	Expire  time.Duration
 }
 
 var TempFile = FileService{
 	tempDir: "/tmp/yaoj-go",
+	Expire:  time.Minute * 5,
 }
 
 // store content into f.tmpDir/name
@@ -29,6 +32,16 @@ func (f *FileService) Store(name string, reader io.Reader) error {
 	if _, err := io.Copy(file, reader); err != nil {
 		return err
 	}
+
+	// 如果到达时限就删除临时文件
+	if f.Expire != 0 {
+		go func() {
+			time.Sleep(f.Expire)
+			log.Printf("remove file: %s", f.Pathof(name))
+			f.Remove(name)
+		}()
+	}
+
 	return nil
 }
 
