@@ -4,8 +4,8 @@ import (
 	"errors"
 	"log"
 	"text/template"
-	"yaoj-go/src/judger"
-	"yaoj-go/src/utils"
+	"yaoj-go/judger"
+	"yaoj-go/utils"
 )
 
 type JudgeServiceRPC interface {

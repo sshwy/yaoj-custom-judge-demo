@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"net/rpc"
 	"net/rpc/jsonrpc"
-	"yaoj-go/src/api"
-	"yaoj-go/src/service"
+	"yaoj-go/api"
+	"yaoj-go/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/julienschmidt/httprouter"

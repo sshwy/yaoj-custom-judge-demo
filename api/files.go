@@ -4,8 +4,8 @@ import (
 	"errors"
 	"log"
 
-	"yaoj-go/src/service"
-	"yaoj-go/src/utils"
+	"yaoj-go/service"
+	"yaoj-go/utils"
 
 	"github.com/gin-gonic/gin"
 )

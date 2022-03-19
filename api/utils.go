@@ -3,27 +3,10 @@ package api
 import (
 	"encoding/json"
 	"errors"
-	"log"
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
-
-func ResWriteJson(w http.ResponseWriter, data interface{}) error {
-	w.Header().Add("Content-Type", "application/json")
-
-	dump, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-
-	if _, err := w.Write(dump); err != nil {
-		return err
-	}
-	log.Print(w.Header())
-	return nil
-}
 
 // 可序列化的满足 error 接口的类型
 type JsonError struct {

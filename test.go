@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
-	"yaoj-go/src/judger"
+	"yaoj-go/judger"
 )
 
 func TestTradJudger() {
